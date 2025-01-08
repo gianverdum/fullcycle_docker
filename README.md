@@ -54,3 +54,7 @@
 - **Configuring a Node app with docker-compose**
 - **Node vs MySQL**
 - **Containers dependencies**
+
+### Challenges
+- **Generate a Golang image that outputs "Full Cycle Rocks!" with an image size smaller than 2MB. The image must be pushed to DockerHub.** [Golang image](https://hub.docker.com/repository/docker/gianverdum/golang/general) **(To be updated)**
+- **Use Nginx as a reverse proxy to access a Node.js application that inserts a name into the database when triggered and returns the name to the user.**
