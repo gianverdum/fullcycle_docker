@@ -1,4 +1,4 @@
-FROM node
+FROM node:latest
 
 WORKDIR /usr/src/app
 
@@ -9,18 +9,32 @@ RUN apt update && \
 
 COPY package*.json ./
 
-RUN if [ ! -f package.json ]; then npm init -y; fi
+# Ensure package.json exists; create it if it doesn't
+RUN if [ ! -f package.json ]; then \
+      npm init -y; \
+    fi && \
+    # Ensure a clean state for node_modules
+    rm -rf node_modules && \
+    # Install required dependencies explicitly
+    npm install express moniker mysql --save && \
+    # Install any additional dependencies from package.json
+    npm install --verbose && \
+    # Ensure correct permissions for node_modules
+    chmod -R 755 /usr/src/app/node_modules
 
-RUN npm install express && \
-    npm install moniker && \
-    npm install mysql
+# Validate that required modules exist
+RUN ls -l /usr/src/app/node_modules && \
+    ls /usr/src/app/node_modules/express && \
+    ls /usr/src/app/node_modules/moniker && \
+    ls /usr/src/app/node_modules/mysql
 
-RUN npm install
-
+# Copy the rest of the application code
 COPY . .
 
+# Make the entrypoint script executable
 RUN chmod +x /usr/src/app/start.sh
 
 EXPOSE 3000
 
-# CMD [ "node", "index.js" ]
+# Define the entrypoint script
+ENTRYPOINT ["/usr/src/app/start.sh"]

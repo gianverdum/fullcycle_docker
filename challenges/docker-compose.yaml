@@ -2,9 +2,9 @@ services:
 
   db:
     image: mysql:5.7
-    command: --innodb-use-native-aio=0
     container_name: db
     restart: always
+    command: --innodb-use-native-aio=0
     tty: true
     volumes:
       - ./mysql:/var/lib/mysql
@@ -21,26 +21,26 @@ services:
       dockerfile: Dockerfile
     container_name: app
     entrypoint: wait-for db:3306 -t 40 -- /usr/src/app/start.sh
+    depends_on:
+      - db
     networks:
       - challenge-network
     volumes:
       - ./node:/usr/src/app
-    depends_on:
-      - db
+      - /usr/src/app/node_modules
 
   nginx:
     build:
       context: ./nginx
       dockerfile: Dockerfile
     container_name: nginx
-    entrypoint: wait-for db:3306 -t 40 -- nginx -g "daemon off;"
+    entrypoint: wait-for app:3000 -t 40 -- nginx -g "daemon off;"
+    depends_on:
+      - app
     networks:
       - challenge-network
     ports:
       - "8080:80"
-    depends_on:
-      - db
-      - app
 
 networks:
   challenge-network:
