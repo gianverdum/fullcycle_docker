@@ -1,1 +1,3 @@
 challenges/mysql/
+challenges/node/node_modules
+challenges/node/package*.json
